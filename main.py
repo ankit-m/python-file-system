@@ -5,7 +5,8 @@ import os
 commands = {
     'open': filesystem.open_file,
     'read': filesystem.read_file,
-    'delete': filesystem.delete_file
+    'delete': filesystem.delete_file,
+    'mkdir': dirsystem.make_dir
 }
 
 current_path = 'root/'
