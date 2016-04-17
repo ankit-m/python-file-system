@@ -7,12 +7,12 @@ INODE_ADDRESS_SPACE = 4096
 MAX_INODES = INODE_ADDRESS_SPACE * 16
 FILES = 256
 FILE_SIZE = 64
+BLOCK_SIZE = 1024
 TOTAL_SIZE = 16384  # This is 16 MB data size
 EMPTY_ADDRESSES = []
 FILE_DATA = []
 DISK = []
 INODES = {}
-BLOCK_SIZE = 1024
 
 
 def initialize_disk():
@@ -64,20 +64,21 @@ def create_inode():
         return False
     else:
         number_inode = DISK[1]['number_inode']
-        INODES[str(number_inode + 1)] = {
+        new_node = number_inode+1
+        INODES[str(new_node)] = {
             'size': 0,
             'LM': 'today',
             'CR': 'today',
             'address': []
         }
         DISK[1]['number_inode'] = DISK[1]['number_inode'] + 1
-        return number_inode
+        return new_node
 
 
 def remove_inode(number_inode):
     global EMPTY_ADDRESSES
     try:
-        for address in INODES[str(number_inode)]:
+        for address in INODES[str(number_inode)]['address']:
             EMPTY_ADDRESSES.append(address)
         del INODES[str(number_inode)]
         return True
@@ -100,9 +101,10 @@ def open(filename):
     return False
 
 
-def write(filename, seek, data):
+def write(filename, data):
     global INODES
     global FILE_DATA
+    global BLOCK_SIZE
 
     root_files = DISK[INODES['1']['address'][0]]
     for inode, name in root_files.iteritems():
@@ -111,6 +113,9 @@ def write(filename, seek, data):
     if len(data) > 7168:
         return False
     else:
+        #truncate existing data
+        INODES[str(number_inode)]['address'] = []
+
         chunks = [data[i:i + BLOCK_SIZE]
                   for i in range(0, len(data), BLOCK_SIZE)]
         for i in chunks:
@@ -132,7 +137,7 @@ def read(filename, seek):
     data = ''
     for address in INODES[number_inode]['address']:
         data = data + FILE_DATA[address]
-    return data[seek:len(data)]
+    return str(data[seek:len(data)])
 
 
 def free(filename):
@@ -146,3 +151,28 @@ def free(filename):
             number_inode = inode
     del root_files[number_inode]
     remove_inode(number_inode)
+
+
+def append(filename, data):
+    global INODES
+    global FILE_DATA
+    global BLOCK_SIZE
+
+    root_files = DISK[INODES['1']['address'][0]]
+    for inode, name in root_files.iteritems():
+        if filename == name:
+            number_inode = inode
+    if len(data) > 7168:
+        return False
+    else:
+        chunks = [data[i:i + BLOCK_SIZE]
+                  for i in range(0, len(data), BLOCK_SIZE)]
+        for i in chunks:
+            index = EMPTY_ADDRESSES.pop()
+            FILE_DATA[index] = str(i)
+            INODES[number_inode]['address'].append(index)
+        return True
+
+# open('ankit.txt')
+# write('ankit.txt',0, 'hello')
+# print read('ankit.txt', 1)

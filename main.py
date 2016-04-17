@@ -7,6 +7,8 @@ commands = {
     'read': filesystem.read_file,
     'delete': filesystem.delete_file,
     'write': filesystem.write_file,
+    'rseek': filesystem.rseek,
+    'append': filesystem.append_file,
     'mkdir': dirsystem.make_dir,
     'cd': dirsystem.change_dir,
     'pwd': dirsystem.present_dir,

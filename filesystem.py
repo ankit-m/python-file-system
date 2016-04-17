@@ -23,36 +23,44 @@ def open_file(path, args):
             'type': filetype,
             'mode': 'rw',
             'rseek': 0,
-            'wseek': 0,
             'inode': inode
         }
     else:
         print 'Cannot create file.'
 
+
 def read_file(path, args):
     location = traverse_disk(path)
-    filename = args[0]
     try:
+        filename = args[0]
         print check.read(filename, location[filename]['rseek'])
     except KeyError:
         print 'No such file in this directory'
+    except IndexError:
+        print 'Insufficient arguments.'
 
 
 def write_file(path, args):
     location = traverse_disk(path)
-    filename = args[0]
     try:
-        check.write(filename, location[filename]['wseek'], args[1])
+        filename = args[0]
+        check.write(filename, args[1])
     except KeyError:
         print 'No such file in this directory'
+    except IndexError:
+        print 'Insufficient arguments.'
+
 
 def delete_file(path, args):
     location = traverse_disk(path)
-    filename = args[0]
     try:
+        filename = args[0]
+        check.free(filename)
         del location[filename]
     except KeyError:
         print 'No such file in this directory'
+    except IndexError:
+        print 'Insufficient arguments.'
 
 
 def get_attributes(arg):
@@ -62,5 +70,22 @@ def get_attributes(arg):
 def set_attributes(arg):
     pass
 
-def seek(path, args):
-    pass
+
+def rseek(path, args):
+    location = traverse_disk(path)
+    filename = args[0]
+    try:
+        location[filename]['rseek'] = int(args[1])
+    except KeyError:
+        print 'No such file open in this directory'
+    except IndexError:
+        print 'Insufficient arguments.'
+
+
+def append_file(path, args):
+    location = traverse_disk(path)
+    filename = args[0]
+    try:
+        check.append(location[filename], args[1])
+    except KeyError:
+        print 'No such file open in the directory'
