@@ -86,6 +86,6 @@ def append_file(path, args):
     location = traverse_disk(path)
     filename = args[0]
     try:
-        check.append(location[filename], args[1])
+        check.append(filename, args[1])
     except KeyError:
         print 'No such file open in the directory'

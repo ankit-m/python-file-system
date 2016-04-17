@@ -50,7 +50,7 @@ def initialize_disk():
             'size': 1,
             'LM': 'today',
             'CR': 'today',
-            'address': [4]
+            'address': [5]
         }
     }
 
@@ -61,7 +61,7 @@ def initialize_disk():
     DISK.append(None)
     DISK.append(SB)
     DISK.append(None)
-    # DISK.append(SINGLE_HIERARCHY)
+    DISK.append(SINGLE_HIERARCHY)
     DISK.append(INODES)
     DISK.append(ROOT_DIR)
 
@@ -89,11 +89,15 @@ def remove_inode(number_inode):
     try:
         for address in INODES[str(number_inode)]['address']:
             EMPTY_ADDRESSES.append(address)
+
+        for address in INODES[number_inode]['single_hierachy']:
+            EMPTY_ADDRESSES.append(address)
+
         del INODES[str(number_inode)]
         return True
+
     except KeyError:
-        print 'Invalid i-Node'
-        return False
+        pass
 
 
 def create_single_hierarchy_block():
@@ -144,7 +148,7 @@ def write(filename, data):
               for i in range(0, len(data), BLOCK_SIZE)]
 
     # fill data into the addresses
-    for i in range(0, NUMBER_FIXED_ADDRESSES):
+    for i in range(0, min(NUMBER_FIXED_ADDRESSES, len(chunks))):
         index = EMPTY_ADDRESSES.pop()
         FILE_DATA[index] = chunks[i]
         INODES[number_inode]['address'].append(index)
@@ -218,7 +222,7 @@ def append(filename, data):
               for i in range(0, len(data), BLOCK_SIZE)]
 
     # fill data into the addresses
-    for i in range(0, NUMBER_FIXED_ADDRESSES):
+    for i in range(0, min(NUMBER_FIXED_ADDRESSES, len(chunks))):
         index = EMPTY_ADDRESSES.pop()
         FILE_DATA[index] = chunks[i]
         INODES[number_inode]['address'].append(index)
@@ -232,3 +236,8 @@ def append(filename, data):
         pass
 
     return True
+
+
+# print open('ankit')
+# write('ankit', 'hello')
+# print read('ankit',0)
