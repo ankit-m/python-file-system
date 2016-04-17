@@ -16,10 +16,12 @@ def open_file(path, args):
     filename = args[0]
     filetype = args[0].split('.')[0]
     location[filename] = {
+        'name': filename,
         'type': filetype,
         'attrs': 'rw',
         'data': ' '
     }
+    return location[filename]
 
 
 def read_file(path, args):
@@ -49,4 +51,7 @@ def get_attributes(arg):
 
 
 def set_attributes(arg):
+    pass
+
+def seek(path, args):
     pass
