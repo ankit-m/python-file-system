@@ -8,7 +8,10 @@ commands = {
     'delete': filesystem.delete_file,
     'mkdir': dirsystem.make_dir,
     'cd': dirsystem.change_dir,
-    'pwd': dirsystem.present_dir
+    'pwd': dirsystem.present_dir,
+    'rmdir': dirsystem.remove_dir,
+    'mvdir': dirsystem.rename_dir,
+    'ls': dirsystem.list_all
 }
 
 current_path = 'root/'
