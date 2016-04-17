@@ -70,7 +70,7 @@ def initialize_disk():
     DISK.append(EMPTY_ADDRESSES)
     DISK.append(file_table)
 
-try:    
+try:
     dump_file = open('disk', 'rb')
     DISK = pickle.load(dump_file)
     dump_file.close()
@@ -150,8 +150,7 @@ def write(filename, data):
     root_files = DISK[INODES['1']['address'][0]]
     for inode, name in root_files.iteritems():
         if filename == name:
-            number_inode = inode
-
+            number_inode = inode    
     # check if data single_hierachy field is needed
     # or if data is exceeding limit
     if len(data) > NUMBER_FIXED_ADDRESSES*BLOCK_SIZE:
@@ -162,7 +161,7 @@ def write(filename, data):
             INODES[number_inode]['single_hierachy'] = create_single_hierarchy_block()
 
     # truncate existing data in case of overwrite
-    INODES[str(number_inode)]['address'] = []
+    INODES[number_inode]['address'] = []
 
     # divide input into block sized chunks
     chunks = [data[i:i + BLOCK_SIZE]
@@ -220,6 +219,7 @@ def free(filename):
     remove_inode(number_inode)
 
 
+
 def append(filename, data):
     global INODES
     global FILE_DATA
@@ -258,4 +258,3 @@ def append(filename, data):
         pass
 
     return True
-
