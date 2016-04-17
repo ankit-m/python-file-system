@@ -10,6 +10,11 @@ FILE_SIZE = 64
 BLOCK_SIZE = 1024
 TOTAL_SIZE = 16384
 NUMBER_FIXED_ADDRESSES = 7
+SINGLE_HIERARCHY_ADDRESSES = 512
+DISK_START = 0
+SB_START = 0
+ROOT_INODE_START = 3
+
 EMPTY_ADDRESSES = []
 FILE_DATA = []
 DISK = []
@@ -56,7 +61,7 @@ def initialize_disk():
     DISK.append(None)
     DISK.append(SB)
     DISK.append(None)
-    DISK.append(SINGLE_HIERARCHY)
+    # DISK.append(SINGLE_HIERARCHY)
     DISK.append(INODES)
     DISK.append(ROOT_DIR)
 
@@ -91,6 +96,13 @@ def remove_inode(number_inode):
         return False
 
 
+def create_single_hierarchy_block():
+    for i in range(0, SINGLE_HIERARCHY_ADDRESSES):
+        index = EMPTY_ADDRESSES.pop()
+        SINGLE_HIERARCHY[index] = ''
+    return SINGLE_HIERARCHY
+
+
 def open(filename):
     global INODES
     global DISK
@@ -114,19 +126,38 @@ def write(filename, data):
     for inode, name in root_files.iteritems():
         if filename == name:
             number_inode = inode
-    if len(data) > NUMBER_FIXED_ADDRESSES*BLOCK_SIZE:
-        return False
-    else:
-        #truncate existing data
-        INODES[str(number_inode)]['address'] = []
 
-        chunks = [data[i:i + BLOCK_SIZE]
-                  for i in range(0, len(data), BLOCK_SIZE)]
-        for i in chunks:
-            index = EMPTY_ADDRESSES.pop()
-            FILE_DATA[index] = str(i)
-            INODES[number_inode]['address'].append(index)
-        return True
+    # check if data single_hierachy field is needed
+    # or if data is exceeding limit
+    if len(data) > NUMBER_FIXED_ADDRESSES*BLOCK_SIZE:
+        if len(data) > NUMBER_FIXED_ADDRESSES*BLOCK_SIZE + SINGLE_HIERARCHY_ADDRESSES*BLOCK_SIZE:
+            print 'File size too big.'
+            return False
+        else:
+            INODES[number_inode]['single_hierachy'] = create_single_hierarchy_block()
+
+    # truncate existing data in case of overwrite
+    INODES[str(number_inode)]['address'] = []
+
+    # divide input into block sized chunks
+    chunks = [data[i:i + BLOCK_SIZE]
+              for i in range(0, len(data), BLOCK_SIZE)]
+
+    # fill data into the addresses
+    for i in range(0, NUMBER_FIXED_ADDRESSES):
+        index = EMPTY_ADDRESSES.pop()
+        FILE_DATA[index] = chunks[i]
+        INODES[number_inode]['address'].append(index)
+
+    try:
+        i = 0
+        for index in INODES[number_inode]['single_hierachy']:
+            FILE_DATA[index] = chunks[i+NUMBER_FIXED_ADDRESSES]
+            i = i + 1
+    except KeyError:
+        pass
+
+    return True
 
 
 def read(filename, seek):
@@ -141,6 +172,12 @@ def read(filename, seek):
     data = ''
     for address in INODES[number_inode]['address']:
         data = data + FILE_DATA[address]
+    try:
+        for item in INODES[number_inode]['single_hierachy']:
+            data = data + FILE_DATA[item]
+    except KeyError:
+        pass
+
     return str(data[seek:len(data)])
 
 
@@ -166,17 +203,32 @@ def append(filename, data):
     for inode, name in root_files.iteritems():
         if filename == name:
             number_inode = inode
-    if len(data) > 7168:
-        return False
-    else:
-        chunks = [data[i:i + BLOCK_SIZE]
-                  for i in range(0, len(data), BLOCK_SIZE)]
-        for i in chunks:
-            index = EMPTY_ADDRESSES.pop()
-            FILE_DATA[index] = str(i)
-            INODES[number_inode]['address'].append(index)
-        return True
 
-# open('ankit.txt')
-# write('ankit.txt',0, 'hello')
-# print read('ankit.txt', 1)
+    # check if data single_hierachy field is needed
+    # or if data is exceeding limit
+    if len(data) > NUMBER_FIXED_ADDRESSES*BLOCK_SIZE: #TODO: REMAINING SIZE
+        if len(data) > NUMBER_FIXED_ADDRESSES*BLOCK_SIZE + SINGLE_HIERARCHY_ADDRESSES*BLOCK_SIZE:
+            print 'File size too big.'
+            return False
+        else:
+            INODES[number_inode]['single_hierachy'] = create_single_hierarchy_block()
+
+    # divide input into block sized chunks
+    chunks = [data[i:i + BLOCK_SIZE]
+              for i in range(0, len(data), BLOCK_SIZE)]
+
+    # fill data into the addresses
+    for i in range(0, NUMBER_FIXED_ADDRESSES):
+        index = EMPTY_ADDRESSES.pop()
+        FILE_DATA[index] = chunks[i]
+        INODES[number_inode]['address'].append(index)
+
+    try:
+        i = 0
+        for index in INODES[number_inode]['single_hierachy']:
+            FILE_DATA[index] = chunks[i+NUMBER_FIXED_ADDRESSES]
+            i = i + 1
+    except KeyError:
+        pass
+
+    return True
