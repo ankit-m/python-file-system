@@ -8,6 +8,7 @@ FILES = 256
 FILE_SIZE = 64
 TOTAL_SIZE = 16384  # This is 16 MB data size
 EMPTY_ADDRESSES = []
+FILE_DATA = []
 DISK = []
 INODES = {}
 
@@ -18,11 +19,13 @@ def initialize_disk():
     global INODE_ADDRESS_SPACE
     global DISK_SIZE
     global DISK
+    global FILE_DATA
 
     # initialize the entire file storage space to ZERO
     # and append them to EMPTY_ADDRESSES stack
-    for i in range(INODE_ADDRESS_SPACE + 2, DISK_SIZE):
+    for i in range(0, DISK_SIZE - INODE_ADDRESS_SPACE - 2):
         EMPTY_ADDRESSES.append(i)
+        FILE_DATA.append('')
 
     # initialize the SUPER BLOCK (SB)
     SB = {
