@@ -55,14 +55,18 @@ initialize_disk()
 
 
 def create_inode():
-    number_inode = DISK[1]['number_inode']
-    INODES[str(number_inode + 1)] = {
-        'size': 0,
-        'LM': 'today',
-        'CR': 'today',
-        'address': []
-    }
-    DISK[1]['number_inode'] = DISK[1]['number_inode'] + 1
+    if len(INODES) >= INODE_ADDRESS_SPACE:
+        return False
+    else:
+        number_inode = DISK[1]['number_inode']
+        INODES[str(number_inode + 1)] = {
+            'size': 0,
+            'LM': 'today',
+            'CR': 'today',
+            'address': []
+        }
+        DISK[1]['number_inode'] = DISK[1]['number_inode'] + 1
+        return number_inode
 
 create_inode()
 
