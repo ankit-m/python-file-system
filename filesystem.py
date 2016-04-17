@@ -1,4 +1,4 @@
-from harddisk import disk
+from harddisk import file_table
 import check
 import pickle
 
@@ -6,7 +6,7 @@ import pickle
 def traverse_disk(path):
     directories = path.split('/')
     directories.pop()
-    location = disk[directories[0]]
+    location = file_table[directories[0]]
     for folder in directories[1:]:
         location = location[folder]
     return location
@@ -16,7 +16,7 @@ def open_file(path, args):
     location = traverse_disk(path)
     filename = args[0]
     filetype = args[0].split('.')[0]
-    inode = check.open(filename)
+    inode = check.open_file(filename)
     if(inode):
         location[filename] = {
             'name': filename,

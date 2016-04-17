@@ -2,6 +2,9 @@ import filesystem
 import dirsystem
 import os
 
+journal = open ('journal.txt', 'a')
+
+
 commands = {
     'open': filesystem.open_file,
     'read': filesystem.read_file,
@@ -23,6 +26,7 @@ while True:
     inp = raw_input('> ')
     try:
         x = commands[inp.split(' ')[0]](current_path, inp.split(' ')[1:])
+        journal.write(inp + '\n')
         if (x):
             if type(x) == dict:
                 print x
@@ -30,3 +34,5 @@ while True:
                 current_path = x;
     except KeyError:
         print 'Invalid Command'
+
+journal.close()

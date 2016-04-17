@@ -1,6 +1,9 @@
 # Data by default is in KB unless mentioned otherwise
 # 20 MB file size
 
+from harddisk import file_table
+import pickle
+
 INODE_SIZE = 64
 DISK_SIZE = 20482
 INODE_ADDRESS_SPACE = 4096
@@ -19,6 +22,8 @@ EMPTY_ADDRESSES = []
 FILE_DATA = []
 DISK = []
 INODES = {}
+SB = {}
+ROOT_DIR = {}
 SINGLE_HIERARCHY = {}
 
 # Called just once to after cold start, reset or restore.
@@ -54,9 +59,6 @@ def initialize_disk():
         }
     }
 
-    # initialize root dir
-    ROOT_DIR = {}
-
     # initialize disk elements
     DISK.append(None)
     DISK.append(SB)
@@ -64,9 +66,28 @@ def initialize_disk():
     DISK.append(SINGLE_HIERARCHY)
     DISK.append(INODES)
     DISK.append(ROOT_DIR)
+    DISK.append(FILE_DATA)
+    DISK.append(EMPTY_ADDRESSES)
+    DISK.append(file_table)
 
-initialize_disk()
+try:
+    dump_file = open('disk', 'rb')
+    DISK = pickle.load(dump_file)
+    dump_file.close()
 
+    INODES = DISK[4]
+    FILE_DATA = DISK[6]
+    EMPTY_ADDRESSES = DISK[7]
+
+except EOFError:
+    print 'initializing'
+    initialize_disk()
+
+
+def dump():
+    dump_file = open('disk', 'wb')
+    pickle.dump(DISK, dump_file)
+    dump_file.close()
 
 def create_inode():
     if len(INODES) >= MAX_INODES:
@@ -107,7 +128,7 @@ def create_single_hierarchy_block():
     return SINGLE_HIERARCHY
 
 
-def open(filename):
+def open_file(filename):
     global INODES
     global DISK
     root_files = DISK[INODES['1']['address'][0]]
@@ -182,6 +203,7 @@ def read(filename, seek):
     except KeyError:
         pass
 
+    dump()
     return str(data[seek:len(data)])
 
 
@@ -238,6 +260,6 @@ def append(filename, data):
     return True
 
 
-# print open('ankit')
-# write('ankit', 'hello')
-# print read('ankit',0)
+open_file('ankit')
+write('ankit', 'sadadad')
+print read('ankit', 0)

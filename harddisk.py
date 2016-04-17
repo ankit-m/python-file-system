@@ -1,6 +1,6 @@
 ''' Contains the directory structure in the form of a object'''
 
-disk = {
+file_table = {
     'root': {
         'userA': {
             'file1':{

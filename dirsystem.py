@@ -1,10 +1,10 @@
-from harddisk import disk
+from harddisk import file_table
 
 
 def traverse_disk(path):
     directories = path.split('/')
     directories.pop()
-    location = disk[directories[0]]
+    location = file_table[directories[0]]
     for folder in directories[1:]:
         location = location[folder]
     return location

@@ -16,65 +16,65 @@ read_after_write_and_delete = ['Mucchu.js','Sahil.c','Hello.txt']
 
 def create_test():
     for i in len(create_this):
-        message = open(create_this[i])
+        message = check.open(create_this[i])
         if message == False:
             print "Out of space"
-        else
+        else:
             print "File opened/Created"
     print "Test 1 -> Complete"
 
 
 def open_test():
     for i in len(add_this):
-        message = open(add_this[i])
+        message = check.open(add_this[i])
         if message == False:
             print "Out of space"
-        else
+        else:
             print "File opened"
     print "Test 2 -> Complete"
 
 def write_test():
     for i in len(write_this):
-        message = write(write_this[i],data_to_write[i])
+        message = check.write(write_this[i],data_to_write[i])
         if message == False:
             print "Write Unsuccessful"
-        else
+        else:
             print "Write Successful"
     print "Test 3 -> Complete"
 
 def read_test():
     for i in len(read_this):
-        message = read(read_this[i],seek_read[i])
+        message = check.read(read_this[i],seek_read[i])
         if message == False:
             print "Read Unsuccessful"
-        else
+        else:
             print "Read Successful"
     print "Test 4 -> Complete"
 
 def delete_test():
     for i in len(delete_this):
-        message = free(delete_this[i])
+        message = check.free(delete_this[i])
         if message == False:
             print "File Does not exist"
-        else
+        else:
             print "File Deleted"
     print "Test 5 -> Complete"
 
 def open_delete():
     for i in len(open_after_delete):
-        message = open(open_after_delete)
+        message = check.open(open_after_delete)
         if message == False:
             print "Not found: Deleted"
-        else
+        else:
             print "Found"
     print "Test 6 -> Complete"
 
 def read_after_ops():
     for i in len(read_after_write_and_delete):
-        message = read(read_after_write_and_delete[i],0)
+        message = check.read(read_after_write_and_delete[i],0)
         if message == False:
             print "Could not read. Deleted file"
-        else
+        else:
             print "Read File.After modification"
     print "Test 7 -> Complete"
 
