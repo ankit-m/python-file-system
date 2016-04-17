@@ -1,5 +1,6 @@
 from harddisk import disk
 
+
 def traverse_disk(path):
     directories = path.split('/')
     directories.pop()
@@ -14,7 +15,7 @@ def make_dir(path, args):
     location[args[0]] = {}
 
 
-def remove_dir(arg):
+def remove_dir(path, args):
     location = traverse_disk(path)
     try:
         del location[args[0]]
@@ -22,8 +23,9 @@ def remove_dir(arg):
         print 'No such directory'
 
 
-def rename_dir(arg):
-    pass
+def rename_dir(path, args):
+    location = traverse_disk(path)
+    location[args[1]] = location.pop(args[0])
 
 
 def change_dir(path, args):
@@ -37,5 +39,12 @@ def change_dir(path, args):
             print 'No such directory'
     return path + new_path
 
+
 def present_dir(path, args):
     print path
+
+
+def list_all(path, args):
+    location = traverse_disk(path)
+    for key, val in location.iteritems():
+        print key
