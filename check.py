@@ -1,20 +1,21 @@
 # Data by default is in KB unless mentioned otherwise
 # 20 MB file size
 
-INODE_SIZE = 64             # This is in KB
+INODE_SIZE = 64
 DISK_SIZE = 20482
 INODE_ADDRESS_SPACE = 4096
 MAX_INODES = INODE_ADDRESS_SPACE * 16
 FILES = 256
 FILE_SIZE = 64
 BLOCK_SIZE = 1024
-TOTAL_SIZE = 16384  # This is 16 MB data size
+TOTAL_SIZE = 16384
 EMPTY_ADDRESSES = []
 FILE_DATA = []
 DISK = []
 INODES = {}
+SINGLE_HIERARCHY = {}
 
-
+# Called just once to after cold start, reset or restore.
 def initialize_disk():
     global INODES
     global EMPTY_ADDRESSES
@@ -31,6 +32,7 @@ def initialize_disk():
 
     # initialize the SUPER BLOCK (SB)
     SB = {
+        'init': False,
         'number_inode': 1,
         'free_blocks': EMPTY_ADDRESSES,
         'used_disk_blocks': 0
@@ -53,6 +55,7 @@ def initialize_disk():
     DISK.append(None)
     DISK.append(SB)
     DISK.append(None)
+    DISK.append(SINGLE_HIERARCHY)
     DISK.append(INODES)
     DISK.append(ROOT_DIR)
 
