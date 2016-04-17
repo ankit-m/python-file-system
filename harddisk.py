@@ -4,9 +4,10 @@ disk = {
     'root': {
         'userA': {
             'file1':{
-                'data': 'Hello World!',
-                'attrs': 'rw',
-                'type': 'txt'
+                'inode': 12,
+                'type': 'txt',
+                'rseek': 0,
+                'wseek': 0
             },
             'file2':{
 
