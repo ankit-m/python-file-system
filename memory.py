@@ -35,7 +35,7 @@ def initialize_disk():
         'add7': EMPTY_ADDRESSES.pop(),
     }
 
-    SPACE[2] = root_inode
+    SPACE[3][0] = root_inode
 
 
 def create_inode(){
@@ -52,7 +52,7 @@ def create_inode(){
         'add6': EMPTY_ADDRESSES.pop(),
         'add7': EMPTY_ADDRESSES.pop()
     }
-    SPACE[3 + SPACE[1]['used_disk_blocks']] = inode #check for node creation
+    SPACE[3 + SPACE['used_disk_blocks']] = inode #check for node creation
     return True
 }
 
