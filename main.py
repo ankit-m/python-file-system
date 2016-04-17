@@ -6,6 +6,7 @@ commands = {
     'open': filesystem.open_file,
     'read': filesystem.read_file,
     'delete': filesystem.delete_file,
+    'write': filesystem.write_file,
     'mkdir': dirsystem.make_dir,
     'cd': dirsystem.change_dir,
     'pwd': dirsystem.present_dir,

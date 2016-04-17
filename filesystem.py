@@ -1,4 +1,5 @@
 from harddisk import disk
+import check
 import pickle
 
 
@@ -15,27 +16,35 @@ def open_file(path, args):
     location = traverse_disk(path)
     filename = args[0]
     filetype = args[0].split('.')[0]
-    location[filename] = {
-        'name': filename,
-        'type': filetype,
-        'attrs': 'rw',
-        'data': ' '
-    }
-    return location[filename]
-
+    inode = check.open(filename)
+    if(inode):
+        location[filename] = {
+            'name': filename,
+            'type': filetype,
+            'mode': 'rw',
+            'rseek': 0,
+            'wseek': 0,
+            'inode': inode
+        }
+    else:
+        print 'Cannot create file.'
 
 def read_file(path, args):
     location = traverse_disk(path)
     filename = args[0]
     try:
-        print location[filename]['data']
+        print check.read(filename, location[filename]['rseek'])
     except KeyError:
         print 'No such file in this directory'
 
 
-def write_file(arg):
-    pass
-
+def write_file(path, args):
+    location = traverse_disk(path)
+    filename = args[0]
+    try:
+        check.write(filename, location[filename]['wseek'], args[1])
+    except KeyError:
+        print 'No such file in this directory'
 
 def delete_file(path, args):
     location = traverse_disk(path)

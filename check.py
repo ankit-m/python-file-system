@@ -4,6 +4,7 @@
 INODE_SIZE = 64             # This is in KB
 DISK_SIZE = 20482
 INODE_ADDRESS_SPACE = 4096
+MAX_INODES = INODE_ADDRESS_SPACE * 16
 FILES = 256
 FILE_SIZE = 64
 TOTAL_SIZE = 16384  # This is 16 MB data size
@@ -11,6 +12,7 @@ EMPTY_ADDRESSES = []
 FILE_DATA = []
 DISK = []
 INODES = {}
+BLOCK_SIZE = 1024
 
 
 def initialize_disk():
@@ -34,7 +36,7 @@ def initialize_disk():
         'used_disk_blocks': 0
     }
 
-    #initialize INODES dictionary
+    # initialize INODES dictionary
     INODES = {
         '1': {
             'size': 1,
@@ -44,10 +46,10 @@ def initialize_disk():
         }
     }
 
-    #initialize root dir
+    # initialize root dir
     ROOT_DIR = {}
 
-    #initialize disk elements
+    # initialize disk elements
     DISK.append(None)
     DISK.append(SB)
     DISK.append(None)
@@ -58,7 +60,7 @@ initialize_disk()
 
 
 def create_inode():
-    if len(INODES) >= INODE_ADDRESS_SPACE:
+    if len(INODES) >= MAX_INODES:
         return False
     else:
         number_inode = DISK[1]['number_inode']
@@ -71,17 +73,76 @@ def create_inode():
         DISK[1]['number_inode'] = DISK[1]['number_inode'] + 1
         return number_inode
 
-create_inode()
 
 def remove_inode(number_inode):
+    global EMPTY_ADDRESSES
     try:
+        for address in INODES[str(number_inode)]:
+            EMPTY_ADDRESSES.append(address)
         del INODES[str(number_inode)]
         return True
     except KeyError:
         print 'Invalid i-Node'
         return False
 
-remove_inode(2)
 
 def open(filename):
-    pass
+    global INODES
+    global DISK
+    root_files = DISK[INODES['1']['address'][0]]
+    for inode, name in root_files.iteritems():
+        if filename == name:
+            return False
+    number_inode = create_inode()
+    if (number_inode != False):
+        root_files[str(number_inode)] = str(filename)
+        return number_inode
+    return False
+
+
+def write(filename, seek, data):
+    global INODES
+    global FILE_DATA
+
+    root_files = DISK[INODES['1']['address'][0]]
+    for inode, name in root_files.iteritems():
+        if filename == name:
+            number_inode = inode
+    if len(data) > 7168:
+        return False
+    else:
+        chunks = [data[i:i + BLOCK_SIZE]
+                  for i in range(0, len(data), BLOCK_SIZE)]
+        for i in chunks:
+            index = EMPTY_ADDRESSES.pop()
+            FILE_DATA[index] = str(i)
+            INODES[number_inode]['address'].append(index)
+        return True
+
+
+def read(filename, seek):
+    global INODES
+    global DISK
+    global FILE_DATA
+
+    root_files = DISK[INODES['1']['address'][0]]
+    for inode, name in root_files.iteritems():
+        if filename == name:
+            number_inode = inode
+    data = ''
+    for address in INODES[number_inode]['address']:
+        data = data + FILE_DATA[address]
+    return data[seek:len(data)]
+
+
+def free(filename):
+    global INODES
+    global DISK
+    global FILE_DATA
+
+    root_files = DISK[INODES['1']['address'][0]]
+    for inode, name in root_files.iteritems():
+        if filename == name:
+            number_inode = inode
+    del root_files[number_inode]
+    remove_inode(number_inode)
