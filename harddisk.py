@@ -1,18 +1,15 @@
-''' Contains the directory structure in the form of a object'''
+import pickle
 
-file_table = {
-    'root': {
-        'userA': {
-            'file1':{
-                'inode': 12,
-                'type': 'txt',
-                'rseek': 0,
-                'wseek': 0
-            },
-            'file2':{
+try:    
+    dump_file = open('disk', 'rb')
+    DISK = pickle.load(dump_file)
+    dump_file.close()
+    file_table = DISK[8]
 
-            }
-        },
-        'userB': {}
+except EOFError:
+    file_table = {
+        'root': {
+
+        }
     }
-}
+

@@ -1,5 +1,5 @@
 from harddisk import file_table
-import check
+import inode_space
 import pickle
 
 
@@ -16,7 +16,7 @@ def open_file(path, args):
     location = traverse_disk(path)
     filename = args[0]
     filetype = args[0].split('.')[0]
-    inode = check.open_file(filename)
+    inode = inode_space.open_file(filename)
     if(inode):
         location[filename] = {
             'name': filename,
@@ -33,7 +33,7 @@ def read_file(path, args):
     location = traverse_disk(path)
     try:
         filename = args[0]
-        print check.read(filename, location[filename]['rseek'])
+        print inode_space.read(filename, location[filename]['rseek'])
     except KeyError:
         print 'No such file in this directory'
     except IndexError:
@@ -44,7 +44,7 @@ def write_file(path, args):
     location = traverse_disk(path)
     try:
         filename = args[0]
-        check.write(filename, args[1])
+        inode_space.write(filename, args[1])
     except KeyError:
         print 'No such file in this directory'
     except IndexError:
@@ -55,7 +55,7 @@ def delete_file(path, args):
     location = traverse_disk(path)
     try:
         filename = args[0]
-        check.free(filename)
+        inode_space.free(filename)
         del location[filename]
     except KeyError:
         print 'No such file in this directory'
@@ -86,6 +86,6 @@ def append_file(path, args):
     location = traverse_disk(path)
     filename = args[0]
     try:
-        check.append(filename, args[1])
+        inode_space.append(filename, args[1])
     except KeyError:
         print 'No such file open in the directory'

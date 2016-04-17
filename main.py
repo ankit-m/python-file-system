@@ -24,6 +24,8 @@ current_path = 'root/'
 
 while True:
     inp = raw_input('> ')
+    if inp == 'exit':
+        os._exit(0)
     try:
         x = commands[inp.split(' ')[0]](current_path, inp.split(' ')[1:])
         journal.write(inp + '\n')

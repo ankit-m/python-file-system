@@ -1,4 +1,4 @@
-import check
+import inode_space
 import filesystem
 
 print "Testing All components - 6 Tests"
@@ -16,7 +16,7 @@ read_after_write_and_delete = ['Mucchu.js','Sahil.c','Hello.txt']
 
 def create_test():
     for i in len(create_this):
-        message = check.open(create_this[i])
+        message = inode_space.open(create_this[i])
         if message == False:
             print "Out of space"
         else:
@@ -26,7 +26,7 @@ def create_test():
 
 def open_test():
     for i in len(add_this):
-        message = check.open(add_this[i])
+        message = inode_space.open(add_this[i])
         if message == False:
             print "Out of space"
         else:
@@ -35,7 +35,7 @@ def open_test():
 
 def write_test():
     for i in len(write_this):
-        message = check.write(write_this[i],data_to_write[i])
+        message = inode_space.write(write_this[i],data_to_write[i])
         if message == False:
             print "Write Unsuccessful"
         else:
@@ -44,7 +44,7 @@ def write_test():
 
 def read_test():
     for i in len(read_this):
-        message = check.read(read_this[i],seek_read[i])
+        message = inode_space.read(read_this[i],seek_read[i])
         if message == False:
             print "Read Unsuccessful"
         else:
@@ -53,7 +53,7 @@ def read_test():
 
 def delete_test():
     for i in len(delete_this):
-        message = check.free(delete_this[i])
+        message = inode_space.free(delete_this[i])
         if message == False:
             print "File Does not exist"
         else:
@@ -62,7 +62,7 @@ def delete_test():
 
 def open_delete():
     for i in len(open_after_delete):
-        message = check.open(open_after_delete)
+        message = inode_space.open(open_after_delete)
         if message == False:
             print "Not found: Deleted"
         else:
@@ -71,7 +71,7 @@ def open_delete():
 
 def read_after_ops():
     for i in len(read_after_write_and_delete):
-        message = check.read(read_after_write_and_delete[i],0)
+        message = inode_space.read(read_after_write_and_delete[i],0)
         if message == False:
             print "Could not read. Deleted file"
         else:
