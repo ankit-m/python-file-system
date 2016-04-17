@@ -1,77 +1,126 @@
-
 # Data by default is in KB unless mentioned otherwise
 # 20 MB file size
 
-space = [0] * 20446
-inode_size = 64             # This is in KB
-inode_address_space = 4096
-files = 256
-file_size = 64
-total_size = 16384 # This is 16 MB data size
+INODE_SIZE = 64             # This is in KB
+DISK_SIZE = 20482
+INODE_ADDRESS_SPACE = 4096
+FILES = 256
+FILE_SIZE = 64
+TOTAL_SIZE = 16384  # This is 16 MB data size
+EMPTY_ADDRESSES = []
+DISK = []
 
-inode = {
-    'size' : 1,
-    'date': 'NULL',
-    'address': 4162
-}
 
-root_inode = {
-    'size': 64,
-    'address': 4098
-}
+def initialize_disk():
 
-root = {
-    'inode': [1,2,3],
-    'fileName': ["sahil","Ankit.txt","Kushan.txt"]
-}
+    # initialize the entire file storage space to ZERO
+    # and append them to EMPTY_ADDRESSES stack
+    for i in range(INODE_ADDRESS_SPACE + 2, DISK_SIZE):
+        EMPTY_ADDRESSES.append(i)
 
-content = None
+    # initialize the SUPER BLOCK (SB)
+    SB = {
+        'number_inodes': INODE_ADDRESS_SPACE,
+        'free_blocks': EMPTY_ADDRESSES,
+        'used_disk_blocks': 0
+    }
 
-def create_disk():
-    print "Hello"
-    # Creating inode space here
-    for i in range(3,5):
-        a = []
-        for j in range(0,64):
-            a.append(inode)
-        space[i] = a
+    #initialize INODES dictionary
+    INODES = {
+        '1': {
+            'size': 1,
+            'LM': 'today',
+            'CR': 'today',
+            'address': [4]
+        }
+    }
 
-    space[3][0] = root_inode
-    # print space[3][0]
+    #initialize root dir
+    ROOT_DIR = {}
 
-    # Creating file space here
-    space[4098] = root
-    space[4162] = "Hello, Can you see me!"
-    print space[4098]
-    return
+    #initialize disk elements
+    DISK.append(None)
+    DISK.append(SB)
+    DISK.append(None)
+    DISK.append(INODES)
+    DISK.append(ROOT_DIR)
 
-create_disk()
-sahil =  "Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.Hello this is a sample test file I am creating for myself.HeBLAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHh"
 
-def open_file(file_name):
-        root_dir = space[3][0]
-        print root_dir
-        root_dir_address = root_dir['address']
-        myRoot = space[root_dir_address]
-        if file_name in myRoot['fileName']:
-            index =  myRoot['fileName'].index(file_name)
+def create_inode():
+    pass
+
+    def open_file(file_name):
+
+        global INODES
+        root = DISK[INODES['1']['address'][0]]
+
+        if file_name in root['fileName']:
+            index = root['fileName'].index(file_name)
             index = index + 1
-            space_value = space[3 + index/64][index%64]['address']
-            print space[space_value]
+            return index
         else:
-            print "False"
-        # print myRoot['fileName'][index]
-        return "File does not exist"
+            return create_inode(file_name)
 
-open_file('sahil')
-def write_file(file_name):
+    def read_file(fd,seek_value):
+
+        global INODES
+        root = DISK[INODES['1']['address'][0]]
+
+        if fd in root['inode']:
+
+            index =  root['inode'].index(fd)
+            index = index + 1
+            inode_value = INODES[index]
+            limit = len(inode_value['address'])
+            a = []
+            for i in range(limit):
+                a.append(inode_value['address'][i])
+            return True,a[seek_value:len(a)]
+
+        else:
+            return False,"Error in Read File Operation"
+        # print myRoot['fileName'][index]
+
+    def write_file(fd, data,seek_value):
+
+        global INODES
+        root = DISK[INODES['1']['address'][0]]
+
+            SPACE_value = SPACE[3 + index/64][index%64]['address']      # Gets address in memory from inode of file
+            limit = int(math.ceil((seek_value + len(data))/1024)) + 1
+
+            if seek_value:
+                   # Extra one because limit must be included in for loop
+                print limit
+                print len(data)
+
+                if limit > 64:
+                    # Extend code SPACE goes here
+                else:
+
+                    start_index = seek_value/BYTE_SIZE
+                    start_offset = seek_value%BYTE_SIZE
+                    start_limit = SPACE_value + start_index + start_offset
+                    chunk = data[(seek_value):(seek_value + start_offset)]
+                    start = int(math.ceil(start_index))
+
+                    for start in range(limit):
+                        chunk = data[(start*1024):(1024*(start+1))]
+                        SPACE[start_limit + start] = chunk
+
+
+            else:
+                limit = int(math.ceil(len(data)/1024)) + 1
+                if limit > 64:
+                    # Extend SPACE here
+                else:
+                    for i in range(limit):
+                        chunk = data[(i*1024):(1024*(i+1))]
+                        SPACE[SPACE_value + i] = chunk
 
         return "Error in Writing to Disk"
+def remove_inode():
+    pass
 
-def read_file(file_name):
-
-        return "Error in Read File Operation"
-
-def create_file(file_name):
-
-        return "Error in Creating File"
+def open(filename):
+    pass

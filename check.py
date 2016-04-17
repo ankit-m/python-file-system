@@ -115,7 +115,7 @@ def open(filename):
         if filename == name:
             return False
     number_inode = create_inode()
-    if (number_inode != False):
+    if number_inode != False:
         root_files[str(number_inode)] = str(filename)
         return number_inode
     return False
