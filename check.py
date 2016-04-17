@@ -9,6 +9,7 @@ FILES = 256
 FILE_SIZE = 64
 BLOCK_SIZE = 1024
 TOTAL_SIZE = 16384
+NUMBER_FIXED_ADDRESSES = 7
 EMPTY_ADDRESSES = []
 FILE_DATA = []
 DISK = []
@@ -113,7 +114,7 @@ def write(filename, data):
     for inode, name in root_files.iteritems():
         if filename == name:
             number_inode = inode
-    if len(data) > 7168:
+    if len(data) > NUMBER_FIXED_ADDRESSES*BLOCK_SIZE:
         return False
     else:
         #truncate existing data
