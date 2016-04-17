@@ -1,0 +1,24 @@
+open testfile.txt
+write testfile.txt Hello
+read testfile.txt
+mkdir testdir
+cd testdir
+ls
+mkdir hello
+ls
+open hello.txt
+ls
+write hello.txt ankit
+open kushan.txt
+write kushan.txt 'whu is world is awesome'
+read kushan.txt
+ls
+ls
+ls
+ls
+read ankit.txt
+read ankit
+read kushan
+ls
+ls
+ls
